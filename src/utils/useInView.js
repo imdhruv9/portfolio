@@ -1,0 +1,36 @@
+import { useEffect, useRef, useState } from 'react'
+
+/**
+ * Custom hook to detect when an element is in viewport
+ * @param {Object} options - Intersection Observer options
+ * @returns {Array} - [ref, isInView]
+ */
+export const useInView = (options = {}) => {
+  const ref = useRef(null)
+  const [isInView, setIsInView] = useState(false)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting)
+    }, {
+      threshold: 0.1,
+      ...options,
+    })
+
+    const currentRef = ref.current
+
+    if (currentRef) {
+      observer.observe(currentRef)
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef)
+      }
+    }
+  }, [options])
+
+  return [ref, isInView]
+}
+
+
